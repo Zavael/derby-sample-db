@@ -4,133 +4,137 @@
 --**  http://www.eclipse.org/legal/epl-v10.html
 --*******************************************************************************
 
-DROP INDEX payments_pk;
-DROP TABLE Payments;
+DROP INDEX payment_pk;
+DROP TABLE payment;
 
-DROP INDEX employees_pk;
-DROP TABLE Employees;
+DROP INDEX employee_pk;
+DROP TABLE employee;
 
-DROP INDEX orderDetails_pk;
-DROP TABLE OrderDetails;
+DROP INDEX order_detail_pk;
+DROP TABLE order_detail;
 
-DROP INDEX products_pk;
-DROP TABLE Products;
+DROP INDEX product_pk;
+DROP TABLE product;
 
-DROP INDEX productLines_pk;
-DROP TABLE ProductLines;
+DROP INDEX product_line_pk;
+DROP TABLE product_line;
 
-DROP INDEX orders_pk;
-DROP INDEX orders_cutomer;
-DROP TABLE Orders;
+DROP INDEX order_pk;
+DROP INDEX order_customer;
+DROP TABLE purchase_order;
 
-DROP INDEX customers_pk;
-DROP TABLE Customers;
+DROP INDEX customer_pk;
+DROP TABLE customer;
 
-DROP INDEX offices_pk;
-DROP TABLE Offices;
+DROP INDEX office_pk;
+DROP TABLE office;
 
 
-CREATE TABLE Offices(
-	officeCode VARCHAR(10) NOT NULL,
+CREATE TABLE office(
+  office_code VARCHAR(10) NOT NULL,
 	city VARCHAR(50),
 	phone VARCHAR(50),
-	addressLine1 VARCHAR(50),
-	addressLine2 VARCHAR(50),
+	address_line1 VARCHAR(50),
+	address_line2 VARCHAR(50),
 	state VARCHAR(50),
 	country VARCHAR(50),
-	postalCode VARCHAR(15),
+	postal_code VARCHAR(15),
 	territory VARCHAR(10)
 );
-CREATE UNIQUE INDEX offices_pk ON Offices ( officeCode );
-ALTER TABLE Offices ADD PRIMARY KEY (officeCode);
+CREATE UNIQUE INDEX office_pk ON office (office_code);
+ALTER TABLE office ADD PRIMARY KEY (office_code);
 
-CREATE TABLE Customers(
-	customerNumber INTEGER NOT NULL,
-	customerName VARCHAR(50),
-	contactLastName VARCHAR(50),
-	contactFirstName VARCHAR(50),
+CREATE TABLE customer(
+	customer_number INTEGER NOT NULL,
+	customer_name VARCHAR(50),
+	contact_last_name VARCHAR(50),
+	contact_first_name VARCHAR(50),
 	phone VARCHAR(50),
-	addressLine1 VARCHAR(50),
-	addressLine2 VARCHAR(50),
+	address_line1 VARCHAR(50),
+	address_line2 VARCHAR(50),
 	city VARCHAR(50),
 	state VARCHAR(50),
-	postalCode VARCHAR(15),
+	postal_code VARCHAR(15),
 	country VARCHAR(50),
-	salesRepEmployeeNumber INTEGER,
-	creditLimit DOUBLE
+	sales_rep_employee_number INTEGER,
+	credit_limit DOUBLE
 );
-CREATE UNIQUE INDEX customers_pk ON Customers( customerNumber );
-ALTER TABLE Customers ADD PRIMARY KEY ( customerNumber );
+CREATE UNIQUE INDEX customer_pk ON customer(customer_number);
+ALTER TABLE customer ADD PRIMARY KEY ( customer_number );
 
-CREATE TABLE Orders(
-	orderNumber INTEGER NOT NULL,
-	orderDate DATE,
-	requiredDate DATE,
-	shippedDate DATE,
+CREATE TABLE purchase_order(
+	order_number INTEGER NOT NULL,
+	order_date DATE,
+	required_date DATE,
+	shipped_date DATE,
 	status VARCHAR(15),
 	comments LONG VARCHAR,
-	customerNumber INTEGER 
+	customer_number INTEGER 
 );
-CREATE UNIQUE INDEX orders_pk ON Orders( orderNumber );
-CREATE INDEX orders_cutomer ON Orders( customerNumber );
-ALTER TABLE Orders ADD PRIMARY KEY ( orderNumber );
-ALTER TABLE Orders ADD FOREIGN KEY (customerNumber) REFERENCES Customers(customerNumber);
+CREATE UNIQUE INDEX order_pk ON purchase_order(order_number);
+CREATE INDEX order_customer ON purchase_order(customer_number);
+ALTER TABLE purchase_order ADD PRIMARY KEY (order_number);
+ALTER TABLE purchase_order ADD FOREIGN KEY (customer_number) REFERENCES customer(customer_number);
 
-CREATE TABLE ProductLines(
-	productLine VARCHAR(50) NOT NULL,
-	textDescription VARCHAR(4000),
-	htmlDescription CLOB,
+CREATE TABLE product_line(
+	product_line VARCHAR(50) NOT NULL,
+	text_description VARCHAR(4000),
+	html_description CLOB,
 	image BLOB
 );
-CREATE UNIQUE INDEX productLines_pk on ProductLines( productLine );
-ALTER TABLE ProductLines ADD PRIMARY KEY ( productLine );
+CREATE UNIQUE INDEX product_line_pk on product_line(product_line);
+ALTER TABLE product_line ADD PRIMARY KEY (product_line);
 
-CREATE TABLE Products(
-	productCode VARCHAR(15) NOT NULL,
-	productName VARCHAR(70),
-	productLine VARCHAR(50),
-	productScale VARCHAR(10),
-	productVendor VARCHAR(50),
-	productDescription LONG VARCHAR,
-	quantityInStock INTEGER,
-	buyPrice DOUBLE,
+CREATE TABLE product(
+	product_code VARCHAR(15) NOT NULL,
+	product_name VARCHAR(70),
+	product_line VARCHAR(50),
+	product_scale VARCHAR(10),
+	product_vendor VARCHAR(50),
+	product_description LONG VARCHAR,
+	quantity_in_stock INTEGER,
+	buy_price DOUBLE,
 	MSRP DOUBLE
 );
-CREATE UNIQUE INDEX products_pk ON Products( productCode );
-ALTER TABLE Products ADD PRIMARY KEY ( productCode );
-ALTER TABLE Products ADD FOREIGN KEY (productLine) REFERENCES ProductLines(productLine);
+CREATE UNIQUE INDEX product_pk ON product(product_code);
+ALTER TABLE product ADD PRIMARY KEY (product_code);
+ALTER TABLE product ADD FOREIGN KEY (product_line) REFERENCES product_line(product_line);
 
-CREATE TABLE OrderDetails(
-	orderNumber INTEGER NOT NULL,
-	productCode VARCHAR(15) NOT NULL,
-	quantityOrdered INTEGER,
-	priceEach DOUBLE,
-	orderLineNumber SMALLINT);
-CREATE UNIQUE INDEX orderDetails_pk ON OrderDetails( orderNumber, productCode );
-ALTER TABLE OrderDetails ADD PRIMARY KEY ( orderNumber, productCode );
-ALTER TABLE OrderDetails ADD FOREIGN KEY (orderNumber) REFERENCES Orders(orderNumber);
-ALTER TABLE OrderDetails ADD FOREIGN KEY (productCode) REFERENCES Products(productCode);
+CREATE TABLE order_detail(
+	order_number INTEGER NOT NULL,
+	product_code VARCHAR(15) NOT NULL,
+	quantity_ordered INTEGER,
+	price_each DOUBLE,
+	order_line_number SMALLINT);
+CREATE UNIQUE INDEX order_detail_pk ON order_detail(order_number, product_code);
+ALTER TABLE order_detail ADD PRIMARY KEY (order_number, product_code);
+ALTER TABLE order_detail ADD FOREIGN KEY (order_number) REFERENCES purchase_order(order_number);
+ALTER TABLE order_detail ADD FOREIGN KEY (product_code) REFERENCES product(product_code);
 
-CREATE TABLE Employees(
-	employeeNumber INTEGER NOT NULL,
-	lastName VARCHAR(50),
-	firstName VARCHAR(50),
+CREATE TABLE employee(
+	employee_number INTEGER NOT NULL,
+	last_name VARCHAR(50),
+	first_name VARCHAR(50),
 	extension VARCHAR(10),
 	email VARCHAR(100),
-	officeCode VARCHAR(10),
-	reportsTo INTEGER,
-	jobTitle VARCHAR(50) 
+	office_code VARCHAR(10),
+	reports_to INTEGER,
+	job_title VARCHAR(50) 
 );
-CREATE UNIQUE INDEX employees_pk ON Employees( employeeNumber );
-ALTER TABLE Employees ADD PRIMARY KEY ( employeeNumber );
-ALTER TABLE Employees ADD FOREIGN KEY (officeCode) REFERENCES Offices(officeCode);
+CREATE UNIQUE INDEX employee_pk ON employee(employee_number);
+ALTER TABLE employee ADD PRIMARY KEY (employee_number);
+ALTER TABLE employee ADD FOREIGN KEY (office_code) REFERENCES office(office_code);
 
-CREATE TABLE Payments(
-	customerNumber INTEGER NOT NULL,
-	checkNumber VARCHAR(50) NOT NULL,
-	paymentDate DATE,
+CREATE TABLE payment(
+	customer_number INTEGER NOT NULL,
+	check_number VARCHAR(50) NOT NULL,
+	payment_date DATE,
 	amount DOUBLE 
 );
-CREATE UNIQUE INDEX payments_pk ON Payments( customerNumber, checkNumber );
-ALTER TABLE Payments ADD PRIMARY KEY ( customerNumber, checkNumber );
-ALTER TABLE Payments ADD FOREIGN KEY (customerNumber) REFERENCES Customers(customerNumber);
+CREATE UNIQUE INDEX payment_pk ON payment(customer_number, check_number);
+ALTER TABLE payment ADD PRIMARY KEY (customer_number, check_number);
+ALTER TABLE payment ADD FOREIGN KEY (customer_number) REFERENCES customer(customer_number);
+
+
+
+
